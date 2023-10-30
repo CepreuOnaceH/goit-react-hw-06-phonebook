@@ -1,10 +1,13 @@
+import { nanoid } from '@reduxjs/toolkit';
 import React, { useState } from 'react';
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { addContact } from 'redux/contactsSlice';
+import Notiflix from 'notiflix';
 
 function ContactForm() {
   const [name, setName] = useState('');
   const [number, setNumber] = useState('');
+  const contacts = useSelector(state => state.contacts);
   const dispatch = useDispatch();
 
   const handleNameChange = e => {
@@ -17,9 +20,13 @@ function ContactForm() {
 
   const handleSubmit = e => {
     e.preventDefault();
-    dispatch(addContact({ name, number }));
-    setName('');
-    setNumber('');
+    if (contacts.some(contact => contact.name === name)) {
+      Notiflix.Notify.failure(`${name} is already in your phone list!`);
+    } else {
+      dispatch(addContact({ name, number, id: nanoid() }));
+      setName('');
+      setNumber('');
+    }
   };
 
   return (
