@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React from 'react';
 import { nanoid } from 'nanoid';
 import { useSelector, useDispatch } from 'react-redux';
 import { addContact, deleteContact, setFilter } from 'redux/contactsSlice';
@@ -7,15 +7,9 @@ import ContactList from './ContactList';
 import Filter from './Filter';
 
 const App = () => {
-  const contacts = useSelector(state => state.contacts.contacts);
-  const filter = useSelector(state => state.contacts.filter);
+  const contacts = useSelector(state => state.contacts);
+  const filter = useSelector(state => state.filter);
   const dispatch = useDispatch();
-  useEffect(() => {
-    const savedContacts = localStorage.getItem('contacts');
-    if (savedContacts) {
-      dispatch(addContact(JSON.parse(savedContacts)));
-    }
-  }, [dispatch]);
 
   const handleAddContact = (name, number) => {
     const newContact = {
@@ -25,20 +19,15 @@ const App = () => {
     };
 
     dispatch(addContact(newContact));
-    localStorage.setItem('contacts', JSON.stringify([...contacts, newContact]));
   };
 
   const handleDeleteContact = id => {
     dispatch(deleteContact(id));
-    const updatedContacts = contacts.filter(contact => contact.id !== id);
-    localStorage.setItem('contacts', JSON.stringify(updatedContacts));
   };
 
   const handleFilterChange = newFilter => {
     dispatch(setFilter(newFilter));
   };
-  console.log('contacts:', contacts);
-  console.log('filter:', filter);
 
   const filteredContacts = contacts.filter(contact =>
     contact.name.toLowerCase().includes(filter.toLowerCase())
